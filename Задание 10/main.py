@@ -1,8 +1,12 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
+from fastapi.exceptions import RequestValidationError
+from pydantic import BaseModel, EmailStr, conint, constr
+from typing import Optional
 
-app = FastAPI(title="Задание 10.1")
+app = FastAPI(title="Задание 10")
+
+##ЗАДАНИЕ 10.1
 
 # Пользовательские исключения
 class CustomExceptionA(Exception):
@@ -58,3 +62,32 @@ async def check_value(value: float):
     if value < 0:
         raise CustomExceptionA(detail=f"Значение {value} меньше нуля")
     return {"value": value, "status": "ok"}
+
+##ЗАДАНИЕ 10.2
+class User(BaseModel):
+    username: str
+    age: conint(gt=18)
+    email: EmailStr
+    password: constr(min_length=8, max_length=16)
+    phone: Optional[str] = 'Unknown'
+
+@app.exception_handler(RequestValidationError)
+async def validation_handler(request: Request, exc: RequestValidationError):
+    errors = []
+    for error in exc.errors():
+        errors.append({
+            "field": " -> ".join(str(loc) for loc in error["loc"]),
+            "message": error["msg"]
+        })
+    return JSONResponse(
+        status_code=422,
+        content=ErrorResponse(
+            status_code=422,
+            message=f"Ошибка валидации: {errors}",
+            type="ValidationError"
+        ).model_dump()
+    )
+
+@app.post("/users")
+async def create_user(user: User):
+    return {"message": "Пользователь создан", "user": user}
