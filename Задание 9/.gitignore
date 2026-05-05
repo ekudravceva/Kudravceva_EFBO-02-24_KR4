@@ -1,0 +1,43 @@
+# Переменные окружения
+.env
+
+# База данных
+*.db
+
+# Системные файлы macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Виртуальное окружение
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Кэш Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Файлы IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Дистрибутивы
+dist/
+build/
+*.egg-info/
+*.egg
